@@ -24,31 +24,31 @@ export const App = () => {
   const [isLoading, setIsLoading] = useState(false);
 
   useEffect(() => {
-    if (searchText !== '') {
-      async function handleFetchRequest() {
-        try {
-          setIsLoading(true);
-          const { totalHits, hits } = await fetchImages(searchText, page);
-          if (!totalHits) {
-            toast.warning(`No images found`, toastConfig);
-            return;
-          }
+    if (!searchText) return;
 
-          if (page === 1) {
-            toast.success(`We've found ${totalHits} images`, toastConfig);
-          }
-
-          setImages(images => [...images, ...hits]);
-          setTotalHits(totalHits);
-        } catch (err) {
-          setError(error => err.message);
-          toast.warning(`Something went wrong. ${error}`, toastConfig);
-        } finally {
-          setIsLoading(false);
+    async function handleFetchRequest() {
+      try {
+        setIsLoading(true);
+        const { totalHits, hits } = await fetchImages(searchText, page);
+        if (!totalHits) {
+          toast.warning(`No images found`, toastConfig);
+          return;
         }
+
+        if (page === 1) {
+          toast.success(`We've found ${totalHits} images`, toastConfig);
+        }
+
+        setImages(images => [...images, ...hits]);
+        setTotalHits(totalHits);
+      } catch (err) {
+        setError(error => err.message);
+        toast.warning(`Something went wrong. ${error}`, toastConfig);
+      } finally {
+        setIsLoading(false);
       }
-      handleFetchRequest();
     }
+    handleFetchRequest();
   }, [searchText, page, error]);
 
   const onSubmit = query => {
@@ -62,7 +62,7 @@ export const App = () => {
   };
 
   const handleBtnClick = () => {
-    setPage(page + 1);
+    setPage(prevPage => prevPage + 1);
   };
 
   const onOpenModal = selectedImage => {
